@@ -1,5 +1,5 @@
 let baseUrl = "http://localhost:3000/api"
-let products;
+let products
 
 function getProducts() {
   fetch(`${baseUrl}/products`)
@@ -8,8 +8,8 @@ function getProducts() {
       products = data;
       console.log(products);
       products.forEach(product => {
-        console.log(product);
+        console.log(product)
       });
     })
-    .catch(error => console.log(error));
+    .catch(error => console.log(error))
 }
