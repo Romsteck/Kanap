@@ -34,4 +34,9 @@ function getProducts(products) {
     });
 }
 
+Créer un tableau à partir de cette table
+Dans la boucle
+--> Créer la classe "products"
+--> Créer les produits avec cette classe, et les insérer dans le tableau
+
 */
