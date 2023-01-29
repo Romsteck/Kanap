@@ -1,4 +1,4 @@
-let baseUrl = "http://localhost:3000/api/products"
+const baseUrl = "http://localhost:3000/api/products"
 
 class Product {
       constructor(
@@ -20,7 +20,7 @@ class Product {
       }
 }
 
-fetch(`${baseUrl}`)
+fetch(baseUrl)
       .then(response => response.json())
       .then(value => {
             AddProducts(value)
