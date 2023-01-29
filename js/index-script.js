@@ -47,6 +47,7 @@ function AddProducts(value) {
 
             let main_Container =          document.createElement('a')
             let article_Container =       document.createElement('article')
+            
             let product_Image =           document.createElement('img')
             let product_Name =            document.createElement('h3')
             let product_Description =     document.createElement('p')
