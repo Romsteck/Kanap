@@ -5,12 +5,12 @@ const selectedProductID = URLParameters.get('id')
 fetch(`${baseUrl}/${selectedProductID}`)
       .then(response => response.json())
       .then(value => {
-            appendProduct(value)
+            fillProduct(value)
       })
       .catch(error => console.log(error))
 
 
-function appendProduct(product) {
+function fillProduct(product) {
 
       const productImage = document.createElement('img')
       const productTitle = document.createElement('h1')
@@ -35,3 +35,14 @@ function appendProduct(product) {
       document.getElementById('title').append()
       document.getElementById('description').textContent = product.name
 }
+
+document.getElementById('addToCart').addEventListener('click', () => {
+
+      const userProducts = JSON.parse(localStorage.getItem('userProducts')) || []
+      userProducts.push({
+            id:selectedProductID,
+            color:document.getElementById('colors').value,
+            quantity:document.getElementById('quantity').value
+      })
+      localStorage.setItem('userProducts', JSON.stringify(userProducts))
+})
