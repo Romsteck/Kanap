@@ -1,28 +1,37 @@
 const baseUrl = "http://localhost:3000/api/products"
-const URL = window.location.href
 const URLParameters = new URLSearchParams(window.location.search)
-const SelectedProductID = URLParameters.get('id')
+const selectedProductID = URLParameters.get('id')
 
-
-fetch(`${baseUrl}/${SelectedProductID}`)
+fetch(`${baseUrl}/${selectedProductID}`)
       .then(response => response.json())
       .then(value => {
-            AppendProduct(value)
+            appendProduct(value)
       })
       .catch(error => console.log(error))
 
 
-function AppendProduct(Product) {
+function appendProduct(product) {
 
-      const ProductImage = document.createElement('img')
-      const productDescription = 
-      ProductImage.src = Product.imageUrl
-      ProductImage.alt = 'Photographie d\'un canapé'
+      const productImage = document.createElement('img')
+      const productTitle = document.createElement('h1')
+      const productPrice = document.getElementById('price')
+      const productDescription = document.getElementById('description')
 
-      const 
+      productImage.src = product.imageUrl
+      productImage.alt = product.altTxt
 
-      document.getElementById('Product_Picture').append(ProductImage)
-      document.getElementById('title').textContent = Product.name
-      document.getElementById('description').textContent = Product.name
-      document.getElementById('colors').append()
+      productTitle.textContent = product.name
+      productPrice.textContent = product.price
+      productDescription.textContent = product.description
+
+      product.colors.forEach(color => {
+            const option = document.createElement('option')
+            option.setAttribute('value', color)
+            option.textContent = color
+            document.getElementById('colors').append(option)
+      })
+      
+      document.querySelector('.item__img').append(productImage)
+      document.getElementById('title').append()
+      document.getElementById('description').textContent = product.name
 }
