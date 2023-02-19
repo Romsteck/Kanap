@@ -36,7 +36,6 @@ function fetchSelectedProduct() {
             .catch(error => console.log(error))
 }
 
-
 function addProductToCart() {
 
       let userProducts = JSON.parse(localStorage.getItem('userProducts')) || []
@@ -89,7 +88,6 @@ function addProductToCart() {
       }
       localStorage.setItem('userProducts', JSON.stringify(userProducts))
 }
-
 
 document.getElementById('addToCart').addEventListener('click', addProductToCart)
 

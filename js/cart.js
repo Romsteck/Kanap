@@ -11,13 +11,26 @@ async function fetchProduct(productId) {
             .catch(error => console.log(error))
 }
 
+function updateItemQuantity(item) {
+}
+function removeItem(item) {
+      item.remove()
+      // console.log(item.getAttribute('data-id'))
+      // console.log(item.getAttribute('data-color'))
+}
+
 async function addProductsToPage() {
 
       let cartContainer = document.getElementById('cart__items')
+      let totalPrice = 0
+      let totalQuantity = 0
       
-      selectedProducts.forEach(async savedProduct => {
+      for (const savedProduct of selectedProducts) {
             
             let currentProduct = await fetchProduct(savedProduct.id)
+
+            totalPrice = totalPrice + (currentProduct.price * savedProduct.quantity)
+            totalQuantity = totalQuantity + savedProduct.quantity
 
             let article = document.createElement('article')
             article.className = 'cart__item'
@@ -44,7 +57,6 @@ async function addProductsToPage() {
                         productPrice.textContent = `${currentProduct.price * savedProduct.quantity} €`
                         descriptionContainer.append(productName, productColor, productPrice)
 
-
                         let settingsMainContainer = document.createElement('div')
                         settingsMainContainer.className = 'cart__item__content__settings'
 
@@ -54,10 +66,10 @@ async function addProductsToPage() {
                               quantitycontainer.className = 'cart__item__content__settings__quantity'
                               quantity.textContent = 'Qté : '
                               quantityInput.type = 'number'
-                              quantity.className = 'itemQuantity'
-                              quantity.name = 'itemQuantity'
-                              quantity.setAttribute('min', 1)
-                              quantity.setAttribute('max', 100)
+                              quantityInput.className = 'itemQuantity'
+                              quantityInput.name = 'itemQuantity'
+                              quantityInput.setAttribute('min', 1)
+                              quantityInput.setAttribute('max', 100)
                               quantityInput.value = savedProduct.quantity
                               quantitycontainer.append(quantity, quantityInput)
 
@@ -74,11 +86,20 @@ async function addProductsToPage() {
 
             article.append(productImageContainer, cartItemContainer)
             cartContainer.append(article)
-      })
+      }
+      document.getElementById('totalQuantity').textContent = totalQuantity
+      document.getElementById('totalPrice').textContent = totalPrice
 
-      // FOREACH POUR LE CALCUL TOTALS QUANTITY/PRICE
-      // document.getElementById('totalQuantity').textContent = totalQuantity
-      // document.getElementById('totalPrice').textContent = totalPrice
+      for (const itemQuantityInput of document.getElementsByClassName('itemQuantity')) {
+            itemQuantityInput.addEventListener('change', ({target}) => {
+                  updateItemQuantity(target.closest('.cart__item'))
+            })
+      }
+      for (const removeButton of document.getElementsByClassName('deleteItem')) {
+            removeButton.addEventListener('click', ({target}) => {
+                  removeItem(target.closest('.cart__item'))
+            })
+      }
 }
 
 addProductsToPage()
