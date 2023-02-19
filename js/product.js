@@ -2,15 +2,7 @@ const baseUrl = "http://localhost:3000/api/products"
 const URLParameters = new URLSearchParams(window.location.search)
 const selectedProductID = URLParameters.get('id')
 
-fetch(`${baseUrl}/${selectedProductID}`)
-      .then(response => response.json())
-      .then(value => {
-            fillProduct(value)
-      })
-      .catch(error => console.log(error))
-
-
-function fillProduct(product) {
+function addSelectedProductToPage(product) {
 
       const productImage = document.createElement('img')
       const productTitle = document.createElement('h1')
@@ -35,14 +27,66 @@ function fillProduct(product) {
       document.getElementById('title').append()
       document.getElementById('description').textContent = product.name
 }
+function fetchSelectedProduct() {
+      fetch(`${baseUrl}/${selectedProductID}`)
+            .then(response => response.json())
+            .then(value => {
+                  addSelectedProductToPage(value)
+            })
+            .catch(error => console.log(error))
+}
 
-document.getElementById('addToCart').addEventListener('click', () => {
 
-      const userProducts = JSON.parse(localStorage.getItem('userProducts')) || []
-      userProducts.push({
-            id:selectedProductID,
-            color:document.getElementById('colors').value,
-            quantity:document.getElementById('quantity').value
-      })
+function addProductToCart() {
+
+      let userProducts = JSON.parse(localStorage.getItem('userProducts')) || []
+      const selectedColor = document.getElementById('colors').value
+      const selectedQuantity = parseInt(document.getElementById('quantity').value)
+
+      let alertMessage = ''
+      if (selectedColor==='' || selectedQuantity<1) {
+            switch (true) {
+                  case selectedColor=='' && selectedQuantity<1:
+                        alertMessage = 'Veuillez sélectionner une couleur, Veuillez sélectionner au moins un produit'
+                        break;
+                  case selectedColor=='':
+                        alertMessage = 'Veuillez sélectionner une couleur'
+                        break;
+                  case selectedQuantity<1:
+                        alertMessage = 'Vous devez sélectionner au moins un produit'
+                  break;
+            }
+            alert(alertMessage)
+      }
+      
+      if (alertMessage=='') {
+
+            if (userProducts.filter(p=> p.id===selectedProductID).length>=1) {
+
+                  // AJOUTER UNE 2EME VERIFICATION AVEC LA COULEUR
+
+                  console.log('Mise à jour du produit existant')
+
+                  let existingProduct = userProducts.find(p=>p.color===selectedColor)
+                  existingProduct.quantity = existingProduct.quantity + selectedQuantity
+
+                  let tempArray = userProducts.filter(p=>p.color!=selectedColor)
+                  tempArray.push(existingProduct)
+
+                  userProducts = tempArray
+            }
+            else {
+                  userProducts.push({
+                        id: selectedProductID,
+                        color: selectedColor,
+                        quantity: selectedQuantity
+                  })
+            }
+      }
       localStorage.setItem('userProducts', JSON.stringify(userProducts))
-})
+}
+
+
+document.getElementById('addToCart').addEventListener('click', addProductToCart)
+
+fetchSelectedProduct()
