@@ -11,7 +11,14 @@ async function fetchProduct(productId) {
             .catch(error => console.log(error))
 }
 
-function updateItemQuantity(item) {
+async function updateItemQuantity(item, newQuantity) {
+
+      let currentProduct = await fetchProduct(item.getAttribute('data-id'))
+
+      const priceElement = item.querySelector('.cart__item__content__description p:last-child')
+      priceElement.textContent = currentProduct.price * newQuantity
+
+      calculateTotalPriceAndQuantity()
 }
 function removeItem(item) {
       const existingProductIndex = selectedProducts.findIndex(p=>p.color===item.getAttribute('data-color') && p.id===item.getAttribute('data-id'))
@@ -40,15 +47,10 @@ async function calculateTotalPriceAndQuantity() {
 async function addProductsToPage() {
 
       let cartContainer = document.getElementById('cart__items')
-      let totalPrice = 0
-      let totalQuantity = 0
       
       for (const savedProduct of selectedProducts) {
             
             let currentProduct = await fetchProduct(savedProduct.id)
-
-            totalPrice = totalPrice + (currentProduct.price * savedProduct.quantity)
-            totalQuantity = totalQuantity + savedProduct.quantity
 
             let article = document.createElement('article')
             article.className = 'cart__item'
@@ -105,12 +107,11 @@ async function addProductsToPage() {
             article.append(productImageContainer, cartItemContainer)
             cartContainer.append(article)
       }
-      document.getElementById('totalQuantity').textContent = totalQuantity
-      document.getElementById('totalPrice').textContent = totalPrice
+      calculateTotalPriceAndQuantity()
 
       for (const itemQuantityInput of document.getElementsByClassName('itemQuantity')) {
             itemQuantityInput.addEventListener('change', ({target}) => {
-                  updateItemQuantity(target.closest('.cart__item'))
+                  updateItemQuantity(target.closest('.cart__item'), parseInt(target.value))
             })
       }
       for (const removeButton of document.getElementsByClassName('deleteItem')) {
