@@ -17,7 +17,24 @@ function removeItem(item) {
       const existingProductIndex = selectedProducts.findIndex(p=>p.color===item.getAttribute('data-color') && p.id===item.getAttribute('data-id'))
       selectedProducts.splice(existingProductIndex, 1)
       localStorage.setItem('userProducts', JSON.stringify(selectedProducts))
+      
       item.remove()
+      calculateTotalPriceAndQuantity()
+}
+async function calculateTotalPriceAndQuantity() {
+
+      let totalPrice = 0
+      let totalQuantity = 0
+
+      for (const savedProduct of selectedProducts) {
+            
+            let currentProduct = await fetchProduct(savedProduct.id)
+
+            totalPrice = totalPrice + (currentProduct.price * savedProduct.quantity)
+            totalQuantity = totalQuantity + savedProduct.quantity
+      }
+      document.getElementById('totalQuantity').textContent = totalQuantity
+      document.getElementById('totalPrice').textContent = totalPrice
 }
 
 async function addProductsToPage() {
