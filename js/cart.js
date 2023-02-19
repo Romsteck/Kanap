@@ -14,9 +14,10 @@ async function fetchProduct(productId) {
 function updateItemQuantity(item) {
 }
 function removeItem(item) {
+      const existingProductIndex = selectedProducts.findIndex(p=>p.color===item.getAttribute('data-color') && p.id===item.getAttribute('data-id'))
+      selectedProducts.splice(existingProductIndex, 1)
+      localStorage.setItem('userProducts', JSON.stringify(selectedProducts))
       item.remove()
-      // console.log(item.getAttribute('data-id'))
-      // console.log(item.getAttribute('data-color'))
 }
 
 async function addProductsToPage() {
