@@ -13,7 +13,13 @@ async function fetchProduct(productId) {
 
 async function updateItemQuantity(item, newQuantity) {
 
-      let currentProduct = await fetchProduct(item.getAttribute('data-id'))
+      const currentProduct = await fetchProduct(item.getAttribute('data-id'))
+
+      const existingProductIndex = selectedProducts.findIndex(p=>p.color===item.getAttribute('data-color') && p.id===item.getAttribute('data-id'))
+      const existingProduct = selectedProducts.find(p=>p.color===item.getAttribute('data-color') && p.id===item.getAttribute('data-id'))
+      existingProduct.quantity = newQuantity
+      selectedProducts.splice(existingProductIndex, 1, existingProduct)
+      localStorage.setItem('userProducts', JSON.stringify(selectedProducts))
 
       const priceElement = item.querySelector('.cart__item__content__description p:last-child')
       priceElement.textContent = currentProduct.price * newQuantity
