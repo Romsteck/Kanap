@@ -1,4 +1,4 @@
-const baseUrl = "http://localhost:3000/api/products"
+const baseUrl = "http://srv-4.mynetwk.biz:3000/api/products"
 const URLParameters = new URLSearchParams(window.location.search)
 const selectedProductID = URLParameters.get('id')
 
@@ -62,18 +62,22 @@ function addProductToCart() {
       if (alertMessage=='') {
 
             if (userProducts.filter(p=> p.id===selectedProductID).length>=1) {
+                  
+                  if (userProducts.filter(p=> p.color===selectedColor && p.id===selectedProductID).length===1) {
 
-                  // AJOUTER UNE 2EME VERIFICATION AVEC LA COULEUR
+                        let existingProduct = userProducts.find(p=>p.color===selectedColor && p.id===selectedProductID)
+                        existingProduct.quantity = existingProduct.quantity + selectedQuantity
 
-                  console.log('Mise à jour du produit existant')
-
-                  let existingProduct = userProducts.find(p=>p.color===selectedColor)
-                  existingProduct.quantity = existingProduct.quantity + selectedQuantity
-
-                  let tempArray = userProducts.filter(p=>p.color!=selectedColor)
-                  tempArray.push(existingProduct)
-
-                  userProducts = tempArray
+                        const existingProductIndex = userProducts.findIndex(p=>p.color===selectedColor && p.id===selectedProductID)
+                        userProducts.splice(existingProductIndex, 1, existingProduct)
+                  }
+                  else {
+                        userProducts.push({
+                              id: selectedProductID,
+                              color: selectedColor,
+                              quantity: selectedQuantity
+                        })
+                  }
             }
             else {
                   userProducts.push({
