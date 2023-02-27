@@ -127,4 +127,101 @@ async function addProductsToPage() {
       }
 }
 
+function validateForm(values) {
+
+      let validationArray = [
+            {
+                  fieldName:  'firstName',
+                  value:      values.firstName,
+                  tester:     /^[a-zA-Zâàéèêëïîôöüç'-]+$/,
+                  formatError:`Le prénom`
+            },
+            {
+                  fieldName:  'lastName',
+                  value:      values.lastName,
+                  tester:     /^[a-zA-Zâàéèêëïîôöüç'-]+$/,
+                  formatError:`Le nom`
+            },
+            {
+                  fieldName:  'address',
+                  value:      values.address,
+                  tester:     /^[a-zA-Zâàéèêëïîôöüç' -\d]+$/,
+                  formatError:`L'adresse`
+            },
+            {
+                  fieldName:  'city',
+                  value:      values.city,
+                  tester:     /^[a-zA-Zâàéèêëïîôöüç' -]+$/,
+                  formatError:`La ville`
+            },
+            {
+                  fieldName:  'email',
+                  value:      values.email,
+                  tester:     /^[\w\-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
+                  formatError:`L'adresse email`
+            }
+      ]
+
+      for (const field of validationArray) {
+
+            let passed = field.tester.test(field.value)
+
+            field.ok = passed
+
+            let selectedErrorMessage = document.getElementById(field.fieldName+'ErrorMsg')
+
+            if (!passed) {
+                  selectedErrorMessage.textContent = field.formatError + ` n'est pas valide`
+            } else {
+                  selectedErrorMessage.textContent = ''
+            }
+      }
+
+      return validationArray.filter(f=>!f.ok).length===0
+}
+
+function submitForm() {
+
+      let submittedValues = {
+            firstName:  document.getElementById('firstName').value,
+            lastName:   document.getElementById('lastName').value,
+            address:    document.getElementById('address').value,
+            city:       document.getElementById('city').value,
+            email:      document.getElementById('email').value
+      }
+
+      let productsToSend = []
+
+      for (const product of selectedProducts) {
+            
+            if (productsToSend.filter(p=>p===product.id).length===0) {
+                  productsToSend.push(product.id)
+            }
+      }
+
+      if (validateForm(submittedValues)) {
+            
+            fetch(`${baseUrl}/order`, {
+                        method:'post',
+                        headers: {
+                              "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                              contact:submittedValues,
+                              products:productsToSend
+                        })
+                  }
+            )
+            .then(response => response.json())
+            .then(value => {
+                  console.log(value)
+            })
+      }
+}
+
 addProductsToPage()
+
+document.getElementById('order').addEventListener('click', (form)=>{
+      form.preventDefault()
+      submitForm()
+})
