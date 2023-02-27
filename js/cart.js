@@ -22,7 +22,7 @@ async function updateItemQuantity(item, newQuantity) {
       localStorage.setItem('userProducts', JSON.stringify(selectedProducts))
 
       const priceElement = item.querySelector('.cart__item__content__description p:last-child')
-      priceElement.textContent = currentProduct.price * newQuantity
+      priceElement.textContent = currentProduct.price * newQuantity + ' €'
 
       calculateTotalPriceAndQuantity()
 }
