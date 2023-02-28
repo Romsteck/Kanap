@@ -193,7 +193,6 @@ function submitForm() {
       let productsToSend = []
 
       for (const product of selectedProducts) {
-            
             if (productsToSend.filter(p=>p===product.id).length===0) {
                   productsToSend.push(product.id)
             }
