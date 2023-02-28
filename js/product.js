@@ -1,4 +1,4 @@
-const baseUrl = "http://srv-4.mynetwk.biz:3000/api/products"
+const baseUrl = "http://localhost:3000/api/products"
 const URLParameters = new URLSearchParams(window.location.search)
 const selectedProductID = URLParameters.get('id')
 

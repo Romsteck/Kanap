@@ -1,4 +1,4 @@
-const baseUrl = "http://srv-4.mynetwk.biz:3000/api/products"
+const baseUrl = "http://localhost:3000/api/products"
 let selectedProducts = JSON.parse(localStorage.getItem('userProducts')) || []
 
 async function fetchProduct(productId) {
@@ -214,7 +214,7 @@ function submitForm() {
             )
             .then(response => response.json())
             .then(value => {
-                  console.log(value)
+                  window.location.href = `./confirmation.html?id=${value.orderId}`
             })
       }
 }
