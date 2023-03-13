@@ -43,34 +43,54 @@ function addProductToCart() {
       const selectedQuantity = parseInt(document.getElementById('quantity').value)
 
       let alertMessage = ''
-      if (selectedColor==='' || selectedQuantity<1) {
-            switch (true) {
-                  case selectedColor=='' && selectedQuantity<1:
-                        alertMessage = 'Veuillez sélectionner une couleur, Veuillez sélectionner au moins un produit'
-                        break;
-                  case selectedColor=='':
-                        alertMessage = 'Veuillez sélectionner une couleur'
-                        break;
-                  case selectedQuantity<1:
-                        alertMessage = 'Vous devez sélectionner au moins un produit'
-                  break;
+      let checkSelectedProduct = userProducts.filter(p=>p.color===selectedColor && p.id===selectedProductID) || []
+
+      let alertCheck = [
+            {
+                  invalid:selectedColor=='',
+                  errorMessage:`Veuillez sélectionner une couleur.`
+            },
+            {
+                  invalid:selectedQuantity<1,
+                  errorMessage:`Vous devez sélectionner au moins un produit.`
+            },
+            {
+                  invalid:(() => {
+                        if (checkSelectedProduct.length === 1) {
+                              return selectedQuantity + checkSelectedProduct[0].quantity > 100;
+                        } else {
+                              return selectedQuantity > 100;
+                        }
+                  })(),
+                  errorMessage:`Vous avez atteint la limite d'articles autorisés pour votre panier.`
             }
-            alert(alertMessage)
-      }
-      
-      if (alertMessage=='') {
+      ]
 
-            if (userProducts.filter(p=> p.id===selectedProductID).length>=1) {
-                  
-                  if (userProducts.filter(p=> p.color===selectedColor && p.id===selectedProductID).length===1) {
+      if (alertCheck.filter(a=>a.invalid).length >= 1) {
+            
+            alert(alertCheck.filter(a=>a.invalid).map(e=>e.errorMessage).join(' '))
+            
+      } else {
+            
+            if (alertMessage=='') {
 
-                        let existingProduct = userProducts.find(p=>p.color===selectedColor && p.id===selectedProductID)
-                        existingProduct.quantity = existingProduct.quantity + selectedQuantity
+                  if (userProducts.filter(p=> p.id===selectedProductID).length>=1) {
+                        
+                        if (userProducts.filter(p=> p.color===selectedColor && p.id===selectedProductID).length===1) {
 
-                        const existingProductIndex = userProducts.findIndex(p=>p.color===selectedColor && p.id===selectedProductID)
-                        userProducts.splice(existingProductIndex, 1, existingProduct)
-                  }
-                  else {
+                              let existingProduct = userProducts.find(p=>p.color===selectedColor && p.id===selectedProductID)
+                              existingProduct.quantity = existingProduct.quantity + selectedQuantity
+
+                              const existingProductIndex = userProducts.findIndex(p=>p.color===selectedColor && p.id===selectedProductID)
+                              userProducts.splice(existingProductIndex, 1, existingProduct)
+                        } else {
+                              userProducts.push({
+                                    id: selectedProductID,
+                                    color: selectedColor,
+                                    quantity: selectedQuantity
+                              })
+                        }
+                  } else {
                         userProducts.push({
                               id: selectedProductID,
                               color: selectedColor,
@@ -78,15 +98,8 @@ function addProductToCart() {
                         })
                   }
             }
-            else {
-                  userProducts.push({
-                        id: selectedProductID,
-                        color: selectedColor,
-                        quantity: selectedQuantity
-                  })
-            }
+            localStorage.setItem('userProducts', JSON.stringify(userProducts))
       }
-      localStorage.setItem('userProducts', JSON.stringify(userProducts))
 }
 
 document.getElementById('addToCart').addEventListener('click', addProductToCart)
