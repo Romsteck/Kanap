@@ -17,14 +17,23 @@ async function updateItemQuantity(item, newQuantity) {
 
       const existingProductIndex = selectedProducts.findIndex(p=>p.color===item.getAttribute('data-color') && p.id===item.getAttribute('data-id'))
       const existingProduct = selectedProducts.find(p=>p.color===item.getAttribute('data-color') && p.id===item.getAttribute('data-id'))
-      existingProduct.quantity = newQuantity
-      selectedProducts.splice(existingProductIndex, 1, existingProduct)
-      localStorage.setItem('userProducts', JSON.stringify(selectedProducts))
 
-      const priceElement = item.querySelector('.cart__item__content__description p:last-child')
-      priceElement.textContent = currentProduct.price * newQuantity + ' €'
-
-      calculateTotalPriceAndQuantity()
+      if(newQuantity < 1) {
+            alert(`Veuillez ajouter au moins un produit`)
+      } else {
+            if (newQuantity > 100) {
+                  alert(`Veuillez sélectionner moins de 100 articles`)
+            } else {
+                  existingProduct.quantity = newQuantity
+                  selectedProducts.splice(existingProductIndex, 1, existingProduct)
+                  localStorage.setItem('userProducts', JSON.stringify(selectedProducts))
+            
+                  const priceElement = item.querySelector('.cart__item__content__description p:last-child')
+                  priceElement.textContent = currentProduct.price * newQuantity + ' €'
+            
+                  calculateTotalPriceAndQuantity()
+            }
+      }
 }
 function removeItem(item) {
       const existingProductIndex = selectedProducts.findIndex(p=>p.color===item.getAttribute('data-color') && p.id===item.getAttribute('data-id'))
@@ -133,13 +142,13 @@ function validateForm(values) {
             {
                   fieldName:  'firstName',
                   value:      values.firstName,
-                  tester:     /^[a-zA-Zâàéèêëïîôöüç'-]+$/,
+                  tester:     /^[a-zA-Zâàéèêëïîôöüç' -]+$/,
                   formatError:`Le prénom`
             },
             {
                   fieldName:  'lastName',
                   value:      values.lastName,
-                  tester:     /^[a-zA-Zâàéèêëïîôöüç'-]+$/,
+                  tester:     /^[a-zA-Zâàéèêëïîôöüç' -]+$/,
                   formatError:`Le nom`
             },
             {
@@ -181,40 +190,47 @@ function validateForm(values) {
 }
 
 function submitForm() {
+      selectedProducts = JSON.parse(localStorage.getItem('userProducts')) || []
 
-      let submittedValues = {
-            firstName:  document.getElementById('firstName').value,
-            lastName:   document.getElementById('lastName').value,
-            address:    document.getElementById('address').value,
-            city:       document.getElementById('city').value,
-            email:      document.getElementById('email').value
-      }
+      if (selectedProducts.length >= 1) {
 
-      let productsToSend = []
-
-      for (const product of selectedProducts) {
-            if (productsToSend.filter(p=>p===product.id).length===0) {
-                  productsToSend.push(product.id)
+            let submittedValues = {
+                  firstName:  document.getElementById('firstName').value,
+                  lastName:   document.getElementById('lastName').value,
+                  address:    document.getElementById('address').value,
+                  city:       document.getElementById('city').value,
+                  email:      document.getElementById('email').value
             }
-      }
-
-      if (validateForm(submittedValues)) {
-            
-            fetch(`${baseUrl}/order`, {
-                        method:'post',
-                        headers: {
-                              "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                              contact:submittedValues,
-                              products:productsToSend
-                        })
+      
+            let productsToSend = []
+      
+            for (const product of selectedProducts) {
+                  if (productsToSend.filter(p=>p===product.id).length===0) {
+                        productsToSend.push(product.id)
                   }
-            )
-            .then(response => response.json())
-            .then(value => {
-                  window.location.href = `./confirmation.html?id=${value.orderId}`
-            })
+            }
+      
+            if (validateForm(submittedValues)) {
+
+                  fetch(`${baseUrl}/order`, {
+                              method:'post',
+                              headers: {
+                                    "Content-Type": "application/json",
+                              },
+                              body: JSON.stringify({
+                                    contact:submittedValues,
+                                    products:productsToSend
+                              })
+                        }
+                  )
+                  .then(response => response.json())
+                  .then(value => {
+                        localStorage.removeItem('userProducts')
+                        window.location.href = `./confirmation.html?id=${value.orderId}`
+                  })
+            }
+      } else {
+            alert(`Votre panier est vide.`)
       }
 }
 
